@@ -3,8 +3,8 @@ var express = require('express'),
 
 var app = express();
 
-app.get('/', function (request, result) {
-  result.send('OK');
-});
+app.use(express.static(__dirname + '/public'));
+
+require('./app/config/routes')(app);
 
 module.exports = app;

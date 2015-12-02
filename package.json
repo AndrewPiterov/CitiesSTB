@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -w app.js ./test/tests.js"
+    "test": "mocha -w ./app app.js ./test/tests.js"
   },
   "keywords": [
     "express",
-    "redis"
+    "redis",
+    "mocha"
   ],
   "author": "piterov1990@gmail.com",
   "license": "ISC",

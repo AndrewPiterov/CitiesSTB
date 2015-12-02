@@ -1,0 +1,26 @@
+{
+  "name": "cities",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "piterov1990@gmail.com"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "express",
+    "redis",
+    "mocha"
+  ],
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
+}
