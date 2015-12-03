@@ -15,4 +15,25 @@ $(function(){
 
     $('.city-list').append(list)
   }
+
+  $('form').on('submit', function(event) {
+    event.preventDefault();
+
+    var form = $(this);
+    var cityData = form.serialize();
+
+    $('.alert').hide();
+
+    $.ajax({
+      type: 'POST', url: '/cities', data: cityData
+    })
+      .error(function() {
+        $('.alert').show();
+      })
+      .success(function(cityName){
+        appendToList([cityName]);
+        form.trigger('reset');
+      });
+  });
+
 });

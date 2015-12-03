@@ -18,7 +18,7 @@ describe('Requests to the root path', function () {
       .expect('Content-Type', /html/, done)
   });
 
-  it('Returns an index file with cities', function(done){
+  it('Returns an index file with cities', function (done) {
     request(app)
       .get(path)
       .expect(/cities/i, done);
@@ -37,15 +37,38 @@ describe('Listining cities on /cities', function () {
       .expect(200, done);
   });
 
-  it('Returns JSON format', function(done){
+  it('Returns JSON format', function (done) {
     request(app)
       .get(path)
       .expect('Content-Type', /json/, done);
   });
 
-  it('Returns initial cities', function(done){
+  it('Returns initial cities', function (done) {
     request(app)
       .get(path)
       .expect(JSON.stringify(['Cheb', 'Moscow', 'NY']), done);
   })
+});
+
+describe('Creating new cities', function () {
+  'use strict';
+
+  var path = '/cities';
+
+  it('Returns a 201 status code', function (done) {
+
+    request(app)
+      .post(path)
+      .send('name=Springfield&description=where+simpsons+live')
+      .expect(201, done);
+  });
+
+  it('Returns the city name', function(done){
+
+    request(app)
+      .post(path)
+      .send('name=Springfield&description=where+simpsons+live')
+      .expect(/springfield/i, done);
+  });
+
 });
