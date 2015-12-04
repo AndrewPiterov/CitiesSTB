@@ -1,16 +1,15 @@
 var bodyParser = require('body-parser'),
   urlencoded = bodyParser.urlencoded({extended: false});
 
+// Redis connection
 var redis = require('redis');
 
-// Redis connection
-
 if (process.env.REDISTOGO_URL) {
-  var rtg = require('url').parse(process.env.REDISTOGO_URL);
-  var client = rtg.createClient(rtg.port, rtg.hostname);
-  client.auth(rtg.auth.split(':')[1]);
+  var rtg = require("url").parse(process.env.REDISTOGO_URL);
+  var client = require("redis").createClient(rtg.port, rtg.hostname);
+  client.auth(rtg.auth.split(":")[1]);
 } else {
-  client = redis.createClient();
+  var client = redis.createClient();
   client.select('development'.length);
 }
 // End Redis connection
