@@ -1,29 +1,40 @@
 var bodyParser = require('body-parser'),
   urlencoded = bodyParser.urlencoded({extended: false});
 
-module.exports = function (app) {
+var redis = require('redis');
 
-  var cities = {
-    'Cheb': 'desc',
-    'Moscow': 'desc desc',
-    'NY': 'desc desc desc'
-  };
+// Redis connection
+
+if (process.env.REDISTOGO_URL) {
+  var rtg = require('url').parse(process.env.REDISTOGO_URL);
+  var client = rtg.createClient(rtg.port, rtg.hostname);
+  client.auth(rtg.auth.split(':')[1]);
+  client.select('production'.length);
+} else {
+  client = redis.createClient();
+  client.select('development'.length);
+}
+// End Redis connection
+
+module.exports = function (app) {
 
   app.get('/', function (request, result) {
     result.render('index');
   });
 
   app.get('/cities', function (request, response) {
-
-    response.json(Object.keys(cities));
+    client.hkeys('cities', function (error, names) {
+      if (error) throw error;
+      response.json(names);
+    });
   });
 
   app.post('/cities', urlencoded, function (request, response) {
-
     var newCity = request.body;
-    cities[newCity.name] = newCity.description;
-    response.status(201).json(newCity.name);
 
+    client.hset('cities', newCity.name, newCity.description, function (error) {
+      if (error) throw error;
+      response.status(201).json(newCity.name);
+    });
   });
-
 };

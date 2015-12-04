@@ -1,5 +1,10 @@
 var request = require('supertest'),
-  app = require('./../app');
+  app = require('./../app'),
+  redis = require('redis'),
+  client = redis.createClient();
+
+client.select('test'.length);
+client.flushdb();
 
 describe('Requests to the root path', function () {
   'use strict';
@@ -13,6 +18,7 @@ describe('Requests to the root path', function () {
   });
 
   it('Returns a HTML format', function (done) {
+
     request(app)
       .get(path)
       .expect('Content-Type', /html/, done)
@@ -38,15 +44,17 @@ describe('Listining cities on /cities', function () {
   });
 
   it('Returns JSON format', function (done) {
+
     request(app)
       .get(path)
       .expect('Content-Type', /json/, done);
   });
 
   it('Returns initial cities', function (done) {
+
     request(app)
       .get(path)
-      .expect(JSON.stringify(['Cheb', 'Moscow', 'NY']), done);
+      .expect(JSON.stringify([]), done);
   })
 });
 
@@ -54,6 +62,10 @@ describe('Creating new cities', function () {
   'use strict';
 
   var path = '/cities';
+
+  before(function(){
+
+  });
 
   it('Returns a 201 status code', function (done) {
 
