@@ -35,4 +35,12 @@ module.exports = function (app) {
       response.status(201).json(newCity.name);
     });
   });
+
+  app.delete('/cities/:name', function(request, response){
+
+    client.hdel('cities', request.params.name, function(error){
+      if(error) throw  error;
+      response.sendStatus(204);
+    })
+  });
 };

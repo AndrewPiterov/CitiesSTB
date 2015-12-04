@@ -54,7 +54,7 @@ describe('Listining cities on /cities', function () {
 
     request(app)
       .get(path)
-      .expect(JSON.stringify([]), done);
+      .expect(JSON.stringify(['Springfield']), done);
   })
 });
 
@@ -63,8 +63,12 @@ describe('Creating new cities', function () {
 
   var path = '/cities';
 
-  before(function(){
+  before(function () {
 
+  });
+
+  afterEach(function(){
+    client.flushdb();
   });
 
   it('Returns a 201 status code', function (done) {
@@ -75,7 +79,7 @@ describe('Creating new cities', function () {
       .expect(201, done);
   });
 
-  it('Returns the city name', function(done){
+  it('Returns the city name', function (done) {
 
     request(app)
       .post(path)
@@ -83,4 +87,23 @@ describe('Creating new cities', function () {
       .expect(/springfield/i, done);
   });
 
+});
+
+describe('Deleting cities', function () {
+  'use strict';
+
+  before(function () {
+    client.hset('cities', 'Banana', 'a tasty fruit');
+  });
+
+  after(function(){
+    client.flushdb();
+  });
+
+  it('Returns a 204 status code', function (done) {
+
+    request(app)
+      .delete('/cities/Banana')
+      .expect(204, done);
+  });
 });
