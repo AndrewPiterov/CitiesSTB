@@ -1,9 +1,11 @@
 var request = require('supertest'),
   app = require('./../app'),
-  redis = require('redis'),
-  client = redis.createClient();
+  redis = require('redis');
 
+process.env.NODE_ENV = 'test';
+var client = redis.createClient();
 client.select('test'.length);
+client.flushdb();
 
 describe('Requests to the root path', function () {
   'use strict';
@@ -32,14 +34,10 @@ describe('Requests to the root path', function () {
 
 });
 
-describe('Listining cities on /cities', function () {
+describe('Listing cities on /cities', function () {
   'use strict';
 
   var path = '/cities';
-
-  before(function(){
-    client.flushdb();
-  });
 
   it('Returns a 200 status code', function (done) {
     request(app)
@@ -67,10 +65,6 @@ describe('Creating new cities', function () {
 
   var path = '/cities';
 
-  after(function(){
-    client.flushdb();
-  });
-
   it('Returns a 201 status code', function (done) {
 
     request(app)
@@ -87,7 +81,7 @@ describe('Creating new cities', function () {
       .expect(/springfield/i, done);
   });
 
-  it('Validates city name and description', function(done){
+  it('Validates city name and description', function (done) {
 
     request(app)
       .post(path)
@@ -104,7 +98,7 @@ describe('Deleting cities', function () {
     client.hset('cities', 'Banana', 'a tasty fruit');
   });
 
-  after(function(){
+  after(function () {
     client.flushdb();
   });
 
@@ -114,4 +108,38 @@ describe('Deleting cities', function () {
       .delete('/cities/Banana')
       .expect(204, done);
   });
+});
+
+describe('Shows city info', function () {
+  'use strict';
+
+  before(function () {
+    client.hset('cities', 'Mango', 'a lovely fruit');
+  });
+
+  after(function () {
+    client.flushdb();
+  });
+
+  var path = '/cities/Mango';
+
+  it('Returns a 200 status code', function (done) {
+
+    request(app)
+      .get(path)
+      .expect(200, done);
+  });
+
+  it('Returns a HTML format', function (done) {
+    request(app)
+      .get(path)
+      .expect('Content-Type', /html/, done);
+  });
+
+  it('Returns information of giving city', function(done){
+    request(app)
+      .get(path)
+      .expect(/fruit/, done);
+  });
+
 });

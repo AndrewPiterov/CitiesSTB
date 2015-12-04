@@ -10,7 +10,7 @@ if (process.env.REDISTOGO_URL) {
   client.auth(rtg.auth.split(":")[1]);
 } else {
   var client = redis.createClient();
-  client.select('development'.length);
+  client.select((process.env.NODE_ENV || 'development').length);
 }
 // End Redis connection
 
@@ -30,7 +30,7 @@ module.exports = function (app) {
   app.post('/cities', urlencoded, function (request, response) {
     var newCity = request.body;
 
-    if(!newCity.name || !newCity.description){
+    if (!newCity.name || !newCity.description) {
       response.sendStatus(400);
       return false;
 
@@ -42,11 +42,20 @@ module.exports = function (app) {
     });
   });
 
-  app.delete('/cities/:name', function(request, response){
+  app.delete('/cities/:name', function (request, response) {
 
-    client.hdel('cities', request.params.name, function(error){
-      if(error) throw  error;
+    client.hdel('cities', request.params.name, function (error) {
+      if (error) throw  error;
       response.sendStatus(204);
     })
+  });
+
+  app.get('/cities/:name', function (request, response) {
+    client.hget('cities', request.params.name, function (error, description) {
+      response.render('show.ejs',
+        {
+          "city": {"name": request.params.name, "description": description}
+        });
+    });
   });
 };
