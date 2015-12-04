@@ -131,15 +131,17 @@ describe('Shows city info', function () {
   });
 
   it('Returns a HTML format', function (done) {
+
     request(app)
       .get(path)
       .expect('Content-Type', /html/, done);
   });
 
   it('Returns information of giving city', function(done){
+
     request(app)
       .get(path)
-      .expect(/fruit/, done);
+      .expect(/lovely/, done);
   });
 
 });

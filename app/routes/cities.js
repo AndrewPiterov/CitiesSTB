@@ -1,5 +1,8 @@
-var bodyParser = require('body-parser'),
+var express = require('express'),
+  bodyParser = require('body-parser'),
   urlencoded = bodyParser.urlencoded({extended: false});
+
+var router = express.Router();
 
 // Redis connection
 var redis = require('redis');
@@ -14,26 +17,19 @@ if (process.env.REDISTOGO_URL) {
 }
 // End Redis connection
 
-module.exports = function (app) {
-
-  app.get('/', function (request, result) {
-    result.render('index');
-  });
-
-  app.get('/cities', function (request, response) {
+router.route('/')
+  .get( function (request, response) {
     client.hkeys('cities', function (error, names) {
       if (error) throw error;
       response.json(names);
     });
-  });
-
-  app.post('/cities', urlencoded, function (request, response) {
+  })
+  .post(urlencoded, function (request, response) {
     var newCity = request.body;
 
     if (!newCity.name || !newCity.description) {
       response.sendStatus(400);
       return false;
-
     }
 
     client.hset('cities', newCity.name, newCity.description, function (error) {
@@ -42,15 +38,15 @@ module.exports = function (app) {
     });
   });
 
-  app.delete('/cities/:name', function (request, response) {
+router.route('/:name')
+  .delete(function (request, response) {
 
     client.hdel('cities', request.params.name, function (error) {
       if (error) throw  error;
       response.sendStatus(204);
     })
-  });
-
-  app.get('/cities/:name', function (request, response) {
+  })
+  .get(function (request, response) {
     client.hget('cities', request.params.name, function (error, description) {
       response.render('show.ejs',
         {
@@ -58,4 +54,8 @@ module.exports = function (app) {
         });
     });
   });
-};
+
+module.exports = router;
+
+
+
