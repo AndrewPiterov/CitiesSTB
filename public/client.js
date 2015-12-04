@@ -50,6 +50,6 @@ $(function(){
     }).done(function(){
       target.parents('li').remove();
     });
-  });
 
+  });
 });

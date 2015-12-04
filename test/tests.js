@@ -4,7 +4,6 @@ var request = require('supertest'),
   client = redis.createClient();
 
 client.select('test'.length);
-client.flushdb();
 
 describe('Requests to the root path', function () {
   'use strict';
@@ -12,6 +11,7 @@ describe('Requests to the root path', function () {
   var path = '/';
 
   it('Returns a 200 status code', function (done) {
+
     request(app)
       .get(path)
       .expect(200, done);
@@ -37,6 +37,10 @@ describe('Listining cities on /cities', function () {
 
   var path = '/cities';
 
+  before(function(){
+    client.flushdb();
+  });
+
   it('Returns a 200 status code', function (done) {
     request(app)
       .get(path)
@@ -54,7 +58,7 @@ describe('Listining cities on /cities', function () {
 
     request(app)
       .get(path)
-      .expect(JSON.stringify(['Springfield']), done);
+      .expect(JSON.stringify([]), done);
   })
 });
 
@@ -63,11 +67,7 @@ describe('Creating new cities', function () {
 
   var path = '/cities';
 
-  before(function () {
-
-  });
-
-  afterEach(function(){
+  after(function(){
     client.flushdb();
   });
 
@@ -85,6 +85,14 @@ describe('Creating new cities', function () {
       .post(path)
       .send('name=Springfield&description=where+simpsons+live')
       .expect(/springfield/i, done);
+  });
+
+  it('Validates city name and description', function(done){
+
+    request(app)
+      .post(path)
+      .send('name=&description=')
+      .expect(400, done);
   });
 
 });
